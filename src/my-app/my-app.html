@@ -1,16 +1,37 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
-</head><body><dom-module id="my-app">
+<dom-module id="my-app">
   <template>
     <style>
       :host {
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]</h2>
+    <table width='100%' border='1'>
+      <tr>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h2>Hello [[prop1]]</h2>
+        </td>
+      </tr>
+    </table>
   </template>
 
-  <script>Polymer({is:"my-app",properties:{prop1:{type:String,value:"my-app"}}});</script>
+  <script>
+    Polymer({
+
+      is: 'my-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'my-app',
+        },
+      },
+
+    });
+  </script>
 </dom-module>
-test
-</body></html>
