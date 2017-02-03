@@ -11,7 +11,7 @@
     "bower.json"
   ],
   "includeDependencies": [
-    "bower_components/polymer/polymer.html",
+    "bower_components/polymer/*",
     "bower_components/webcomponentsjs/webcomponents-lite.min.js"
   ]
 }
