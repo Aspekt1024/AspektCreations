@@ -5,27 +5,29 @@ api_version: 1
 threadsafe: yes
 
 handlers:
-
 - url: /bower_components
-  static_dir: bower_components
+  static_dir: build/bundled/bower_components
   secure: always
 
 - url: /images
-  static_dir: images
+  static_dir: build/bundled/images
   secure: always
 
-- url: /(.*).(html|js|json|css)
-  static_files: \1.\2
-  upload: (.*)\.(html|js|json|css)
+- url: /src
+  static_dir: build/bundled/src
   secure: always
 
-- url: /
-  static_files: index.html
-  upload: index\.html
-  http_headers:
-    Link: '</scripts/app.js>; rel=preload; as=script, </elements/elements.html>; rel=preload; as=document, </styles/main.css>; rel=preload; as=style'
-    # Access-Control-Allow-Origin: "*"
+- url: /service-worker.js
+  static_files: build/bundled/service-worker.js
+  upload: build/bundled/service-worker.js
   secure: always
 
-skip_files:
-- ^(.*/)?app\.yaml
+- url: /manifest.json
+  static_files: build/bundled/manifest.json
+  upload: build/bundled/manifest.json
+  secure: always
+
+- url: /.*
+  static_files: build/bundled/index.html
+  upload: build/bundled/index.html
+  secure: always 
