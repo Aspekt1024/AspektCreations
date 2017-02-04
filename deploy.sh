@@ -16,4 +16,4 @@ gulp
 cp app.yaml dist/app.yaml
 
 echo "Deploying $DEPLOY_VERSION"
-gcloud preview app deploy dist/app.yaml --project $GAE_PROJECT --promote --version $DEPLOY_VERSION
+gcloud app deploy dist/app.yaml --project $GAE_PROJECT --promote --version $DEPLOY_VERSION
