@@ -506,9 +506,9 @@
     <div>
   </div></div></template>
 
-  <script>Polymer({is:"audio-el",properties:{title:String,src:String,isPlaying:{type:Boolean,value:!1},duration:{type:Number,value:0}},_getIconString:function(e){return e?"av:play-circle-outline":"av:pause-circle-outline"},playPause:function(e){e.preventDefault();var a=this;a.$.audio.paused?(a.$.audio.play(),a.isPlaying=!0):(a.$.audio.pause(),a.isPlaying=!1)},listeners:{"audio.loadedmetadata":"_onCanPlay","audio.playing":"_startProgressTimer"},_onCanPlay:function(){var e=this;e.$.progress.max=1e3*e.$.audio.duration,e.duration=e.$.audio.duration},_startProgressTimer:function(){var e=this;e.timer={},e.timer.sliderUpdateInterval&&clearInterval(e.timer.sliderUpdateInterval),e.timer.sliderUpdateInterval=setInterval(function(){e.$.audio.paused?clearInterval(e.time.sliderUpdateInterval):(e.$.progress.value=1e3*e.$.audio.currentTime,e.currentTime=e.$.audio.currentTime)},120)},_convertSecToMin:function(e){if(0===e)return"";var a=Math.floor(e/60),r=Math.floor(e%60)+"";return a+":"+(r.length<2?"0"+r:r)}});</script>
+  <script>Polymer({is:"audio-el",properties:{title:String,src:String,isPlaying:{type:Boolean,value:!1},duration:{type:Number,value:0}},_getIconString:function(e){return e?"av:pause-circle-outline":"av:play-circle-outline"},playPause:function(e){e.preventDefault();var a=this;a.$.audio.paused?(a.$.audio.play(),a.isPlaying=!0):(a.$.audio.pause(),a.isPlaying=!1)},listeners:{"audio.loadedmetadata":"_onCanPlay","audio.playing":"_startProgressTimer"},_onCanPlay:function(){var e=this;e.$.progress.max=1e3*e.$.audio.duration,e.duration=e.$.audio.duration},_startProgressTimer:function(){var e=this;e.timer={},e.timer.sliderUpdateInterval&&clearInterval(e.timer.sliderUpdateInterval),e.timer.sliderUpdateInterval=setInterval(function(){e.$.audio.paused?clearInterval(e.time.sliderUpdateInterval):(e.$.progress.value=1e3*e.$.audio.currentTime,e.currentTime=e.$.audio.currentTime)},120)},_convertSecToMin:function(e){if(0===e)return"";var a=Math.floor(e/60),r=Math.floor(e%60)+"";return a+":"+(r.length<2?"0"+r:r)}});</script>
 </dom-module>
-</div><dom-module id="my-view1">
+</div><dom-module id="my-audio">
   <template>
     <style include="shared-styles">
       :host {
@@ -519,14 +519,14 @@
     </style>
 
     <div class="card">
-      <div class="circle">1</div>
-      <h1>View One</h1>
+      <div class="circle">A</div>
+      <h1>Audio inspires emotion</h1>
       <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
       <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
       <audio-el title="doom.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el>
     </div>
   </template>
 
-  <script>Polymer({is:"my-view1"});</script>
+  <script>Polymer({is:"my-audio"});</script>
 </dom-module>
 </body></html>
