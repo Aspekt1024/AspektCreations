@@ -1,0 +1,120 @@
+<html><head><link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="/bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/iron-icons/av-icons.html">
+
+</head><body><dom-module id="audio-el">
+  <template>
+  <style>
+    :host {
+      width: 100%;
+    }
+
+    #left,
+    #right {
+      height: 25px;
+      width: 50px;
+      position: relative;
+    }
+
+    #left {
+      width: 25px;
+      background-color: blueviolet;
+    }
+
+    .layout-horizontal {
+      display: flex;
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+    }
+
+    .flex {
+      -ms-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+    }
+
+    .self-start {
+      -ms-align-self: flex-start;
+      -webkit-align-self: flex-start;
+      align-self: flex-start;
+    }
+
+    .self-end {
+      -ms-align-self: flex-end;
+      -webkit-align-self: flex-end;
+      align-self: flex-end;
+    }
+
+    #title {
+      position: absolute;
+      color: blueviolet;
+      font-size: 15px;
+      text-align: center;
+      line-height: 25px;
+      z-index: 2;
+    }
+
+    #wrapper {
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+      cursor: pointer;
+    }
+
+    #duration {
+      text-align: center;
+      line-height: 25px;
+      font-size: 11px;
+      color: blueviolet;
+    }
+
+    #play,
+    #pause {
+      color: #fff;
+    }
+
+    .fit {
+      position: absolute;
+      margin: auto;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    paper-progress {
+      position: relative;
+      width: 100%;
+      --paper-progress-active-color: blueviolet;
+      --paper-progress-height: 25px;
+      --paper-progress-container-colour: rgba(255, 255, 255, 0.75);
+    }
+  </style>
+
+
+    <div id="wrapper" class="layout-horizontal" on-click="playPause">
+
+      <div id="left" class="self-start">
+        <iron-icon id="play" class="fit" icon$="{{ _getIconString(isPlaying) }}"></iron-icon>
+      </div>
+
+      <div class="flex">
+        <div id="title" class="fit">{{ title }}</div>
+        <audio id="audio" src="{{ src }}"></audio>
+        <paper-progress id="progress"></paper-progress>
+      </div>
+
+      <div id="right" class="self-end">
+        <div id="duration" class="fit">
+          <span class="fit">{{ _convertSecToMin(duration) }}</span>
+        </div>
+      </div>
+
+    <div>
+  </div></div></template>
+
+  <script>Polymer({is:"audio-el",properties:{title:String,src:String,isPlaying:{type:Boolean,value:!1},duration:{type:Number,value:0}},_getIconString:function(e){return e?"av:play-circle-outline":"av:pause-circle-outline"},playPause:function(e){e.preventDefault();var a=this;a.$.audio.paused?(a.$.audio.play(),a.isPlaying=!0):(a.$.audio.pause(),a.isPlaying=!1)},listeners:{"audio.loadedmetadata":"_onCanPlay","audio.playing":"_startProgressTimer"},_onCanPlay:function(){var e=this;e.$.progress.max=1e3*e.$.audio.duration,e.duration=e.$.audio.duration},_startProgressTimer:function(){var e=this;e.timer={},e.timer.sliderUpdateInterval&&clearInterval(e.timer.sliderUpdateInterval),e.timer.sliderUpdateInterval=setInterval(function(){e.$.audio.paused?clearInterval(e.time.sliderUpdateInterval):(e.$.progress.value=1e3*e.$.audio.currentTime,e.currentTime=e.$.audio.currentTime)},120)},_convertSecToMin:function(e){if(0===e)return"";var a=Math.floor(e/60),r=Math.floor(e%60)+"";return a+":"+(r.length<2?"0"+r:r)}});</script>
+</dom-module>
+</body></html>
