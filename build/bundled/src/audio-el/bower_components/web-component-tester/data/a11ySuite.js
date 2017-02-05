@@ -1,1 +1,122 @@
-!function(e,t,n){Object.keys(e.interfaces).forEach(function(t){var a=e.interfaces[t];e.interfaces[t]=function(t){a.apply(this,arguments);var i=e.Suite,r=e.Test;t.on("pre-require",function(e,a,s){var o=new n.AuditConfiguration;o.scope=document.body,o.showUnsupportedRulesWarning=!1;var u=n.AuditRules.getRules().filter(function(e){return!e.requiresConsoleAPI});e.a11ySuite=function(e){var s=document.getElementById(e);if(s){var c=i.create(t,"A11y Audit - Fixture: "+e);return c.eachTest=function(){s.create();var e=n.Audit.run(o);e.forEach(function(e,t){if("NA"!==e.result){var i=u[t].heading,s="FAIL"===e.result?n.Audit.accessibilityErrorMessage(e):null,o=new r(i,function(){if(s)throw new Error(s)});o.file=a,c.addTest(o)}}),s.restore(),t.eachTest.apply(c,arguments),this.eachTest=t.eachTest},c}}})}}),t.use(function(e,t){var a=e.Assertion;e.assert.a11yLabel=function(e,t,n){new a(e).to.have.a11yLabel(t,n)},a.addMethod("a11yLabel",function(e,i){i&&t.flag(this,"message",i);var r=this._obj;new a(r).to.be.instanceOf(Node);var s=n.properties.findTextAlternatives(r,{});this.assert(s===e,"expected #{this} to have text alternative #{exp} but got #{act}","expected #{this} to not have text alternative #{act}",e,s,!0)})})}(window.Mocha,window.chai,window.axs);
+/**
+ * @license
+ * Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+
+(function(Mocha, chai, axs) {
+
+  Object.keys(Mocha.interfaces).forEach(function(iface) {
+    var orig = Mocha.interfaces[iface];
+
+    Mocha.interfaces[iface] = function(suite) {
+      orig.apply(this, arguments);
+
+      var Suite = Mocha.Suite;
+      var Test = Mocha.Test;
+
+      suite.on('pre-require', function(context, file, mocha) {
+
+        // build an audit config to disable certain ignorable tests
+        var axsConfig = new axs.AuditConfiguration();
+        axsConfig.scope = document.body;
+        axsConfig.showUnsupportedRulesWarning = false;
+
+        // filter out rules that only run in the extension
+        var rules = axs.AuditRules.getRules().filter(function(rule) {
+          return !rule.requiresConsoleAPI;
+        });
+
+        /**
+          * Runs the Chrome Accessibility Developer Tools Audit against a test-fixture
+          *
+          * @param {String} fixtureId ID of the fixture element in the document to use
+          */
+        context.a11ySuite = function(fixtureId) {
+          // capture a reference to the fixture element early
+          var fixtureElement = document.getElementById(fixtureId);
+          if (!fixtureElement) {
+            return;
+          }
+
+          // build mocha suite
+          var a11ySuite = Suite.create(suite, 'A11y Audit - Fixture: ' + fixtureId);
+
+          // override the `eachTest` function to hackily create the tests
+          //
+          // eachTest is called right before test runs to calculate the total
+          // number of tests
+          a11ySuite.eachTest = function() {
+            // instantiate fixture
+            fixtureElement.create();
+
+            // run audit
+            var auditResults = axs.Audit.run(axsConfig);
+
+            // create tests for audit results
+            auditResults.forEach(function(result, index) {
+              // only show applicable tests
+              if (result.result !== 'NA') {
+                var title = rules[index].heading;
+                // fail test if audit result is FAIL
+                var error = result.result === 'FAIL' ? axs.Audit.accessibilityErrorMessage(result) : null;
+                var test = new Test(title, function() {
+                  if (error) {
+                    throw new Error(error);
+                  }
+                });
+                test.file = file;
+                a11ySuite.addTest(test);
+              }
+            });
+
+            // teardown fixture
+            fixtureElement.restore();
+
+            suite.eachTest.apply(a11ySuite, arguments);
+            this.eachTest = suite.eachTest;
+          };
+
+          return a11ySuite;
+        };
+      });
+    };
+  });
+
+  chai.use(function(chai, util) {
+    var Assertion = chai.Assertion;
+
+    // assert
+    chai.assert.a11yLabel = function(node, exp, msg){
+      new Assertion(node).to.have.a11yLabel(exp, msg);
+    };
+
+    // expect / should
+    Assertion.addMethod('a11yLabel', function(str, msg) {
+      if (msg) {
+        util.flag(this, 'message', msg);
+      }
+
+      var node = this._obj;
+
+      // obj must be a Node
+      new Assertion(node).to.be.instanceOf(Node);
+
+      // vind the text alternative with the help of accessibility dev tools
+      var textAlternative = axs.properties.findTextAlternatives(node, {});
+
+      this.assert(
+        textAlternative === str,
+        'expected #{this} to have text alternative #{exp} but got #{act}',
+        'expected #{this} to not have text alternative #{act}',
+        str,
+        textAlternative,
+        true
+      );
+    });
+  });
+})(window.Mocha, window.chai, window.axs);

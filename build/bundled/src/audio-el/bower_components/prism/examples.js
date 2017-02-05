@@ -1,1 +1,181 @@
-!function(){function e(e){return l.then(function(n){for(var a=0,t=n.length;a<t;a++)if(n[a].path===e)return!0;return!1})}function n(e){return new Promise(function(n,a){$u.xhr({url:e,callback:function(e){e.status<400&&e.responseText?n(e.responseText):a()}})})}function a(e){var a=u[e];a.enabled?(a.examplesPromise||(a.examplesPromise=n(a.examplesPath)),a.examplesPromise.then(function(n){r[e].innerHTML=n,t(e).then(function(){for(var n,a=r[e].querySelectorAll('code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'),t=0;n=a[t++];)Prism.highlightElement(n)})})):r[e].innerHTML=""}function t(e){var n=s(e).map(t);return Promise.all(n).then(function(){if(!Prism.languages[e])return new Promise(function(n){$u.script("components/prism-"+e+".js",n)})})}function s(e){return components.languages[e]&&components.languages[e].require?"array"===$u.type(components.languages[e].require)?components.languages[e].require:[components.languages[e].require]:[]}var r={},i="https://api.github.com/repos/PrismJS/prism/git/trees/gh-pages?recursive=1",l=new Promise(function(e){$u.xhr({url:i,callback:function(n){n.status<400&&e(JSON.parse(n.responseText).tree)}})}),u=components.languages;for(var o in u)"meta"!==o&&!function(n){var t=u[n],s=!1;"default"===t.option&&(s=!0),t.enabled=s,t.path=u.meta.path.replace(/\{id}/g,n)+".js",t.examplesPath=u.meta.examplesPath.replace(/\{id}/g,n)+".html",e(t.examplesPath).then(function(e){$u.element.create("label",{attributes:{"data-id":n,title:e?"":"No examples are available for this language."},className:e?"":"unavailable",contents:[{tag:"input",properties:{type:"checkbox",name:"language",value:n,checked:s&&e,disabled:!e,onclick:function(){$$('input[name="'+this.name+'"]').forEach(function(e){u[e.value].enabled=e.checked}),a(n)}}},t.title],inside:"#languages"}),r[n]=$u.element.create("section",{id:"language-"+n,className:"language-"+n,inside:"#examples"}),s&&a(n)})}(o)}();
+/**
+ * Manage examples
+ */
+
+(function() {
+
+var examples = {};
+
+var treeURL = 'https://api.github.com/repos/PrismJS/prism/git/trees/gh-pages?recursive=1';
+var treePromise = new Promise(function (resolve) {
+	$u.xhr({
+		url: treeURL,
+		callback: function (xhr) {
+			if (xhr.status < 400) {
+				resolve(JSON.parse(xhr.responseText).tree);
+			}
+		}
+	});
+});
+
+var languages = components.languages;
+
+for (var id in languages) {
+	if (id === 'meta') {
+		continue;
+	}
+
+	(function (id) {
+		var language = languages[id];
+		var checked = false;
+
+		if (language.option === 'default') {
+			checked = true;
+		}
+
+		language.enabled = checked;
+		language.path = languages.meta.path.replace(/\{id}/g, id) + '.js';
+		language.examplesPath = languages.meta.examplesPath.replace(/\{id}/g, id) + '.html';
+
+		fileExists(language.examplesPath).then(function (exists) {
+			$u.element.create('label', {
+				attributes: {
+					'data-id': id,
+					'title': !exists ? 'No examples are available for this language.' : ''
+				},
+				className: !exists ? 'unavailable' : '',
+				contents: [
+					{
+						tag: 'input',
+						properties: {
+							type: 'checkbox',
+							name: 'language',
+							value: id,
+							checked: checked && exists,
+							disabled: !exists,
+							onclick: function () {
+								$$('input[name="' + this.name + '"]').forEach(function (input) {
+									languages[input.value].enabled = input.checked;
+								});
+
+								update(id);
+							}
+						}
+					},
+					language.title
+				],
+				inside: '#languages'
+			});
+			examples[id] = $u.element.create('section', {
+				'id': 'language-' + id,
+				'className': 'language-' + id,
+				inside: '#examples'
+			});
+			if (checked) {
+				update(id);
+			}
+		});
+	}(id));
+}
+
+function fileExists(filepath) {
+	return treePromise.then(function (tree) {
+		for (var i = 0, l = tree.length; i < l; i++) {
+			if (tree[i].path === filepath) {
+				return true;
+			}
+		}
+		return false;
+	});
+}
+
+function getFileContents(filepath) {
+	return new Promise(function (resolve, reject) {
+		$u.xhr({
+			url: filepath,
+			callback: function (xhr) {
+				if (xhr.status < 400 && xhr.responseText) {
+					resolve(xhr.responseText);
+				} else {
+					reject();
+				}
+			}
+		});
+	});
+}
+
+function update(id) {
+	var language = languages[id];
+	if (language.enabled) {
+		if (!language.examplesPromise) {
+			language.examplesPromise = getFileContents(language.examplesPath);
+		}
+		language.examplesPromise.then(function (contents) {
+			examples[id].innerHTML = contents;
+
+			loadLanguage(id).then(function () {
+				var elements = examples[id].querySelectorAll('code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code');
+
+				for (var i=0, element; element = elements[i++];) {
+					Prism.highlightElement(element);
+				}
+			});
+		});
+	} else {
+		examples[id].innerHTML = '';
+	}
+}
+
+/**
+ * Loads a language, including all dependencies
+ *
+ * @param {string} lang the language to load
+ * @type {Promise} the promise which resolves as soon as everything is loaded
+ */
+function loadLanguage (lang)
+{
+	// at first we need to fetch all dependencies for the main language
+	// Note: we need to do this, even if the main language already is loaded (just to be sure..)
+	//
+	// We load an array of all dependencies and call recursively this function on each entry
+	//
+	// dependencies is now an (possibly empty) array of loading-promises
+	var dependencies = getDependenciesOfLanguage(lang).map(loadLanguage);
+
+	// We create a promise, which will resolve, as soon as all dependencies are loaded.
+	// They need to be fully loaded because the main language may extend them.
+	return Promise.all(dependencies)
+		.then(function () {
+
+			// If the main language itself isn't already loaded, load it now
+			// and return the newly created promise (we chain the promises).
+			// If the language is already loaded, just do nothing - the next .then()
+			// will immediately be called
+			if (!Prism.languages[lang]) {
+				return new Promise(function (resolve) {
+					$u.script('components/prism-' + lang + '.js', resolve);
+				});
+			}
+		});
+}
+
+
+/**
+ * Returns all dependencies (as identifiers) of a specific language
+ *
+ * @param {string} lang
+ * @returns {Array.<string>} the list of dependencies. Empty if the language has none.
+ */
+function getDependenciesOfLanguage (lang)
+{
+	if (!components.languages[lang] || !components.languages[lang].require)
+	{
+		return [];
+	}
+
+	return ($u.type(components.languages[lang].require) === "array")
+		? components.languages[lang].require
+		: [components.languages[lang].require];
+}
+
+}());

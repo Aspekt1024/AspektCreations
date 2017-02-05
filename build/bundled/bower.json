@@ -1,7 +1,8 @@
 {
-  "name": "polymer-starter-kit",
+  "name": "aspekt-creations",
   "authors": [
-    "The Polymer Authors"
+    "The Polymer Authors",
+    "Dan Szabo d.szabo87@gmail.com"
   ],
   "license": "https://polymer.github.io/LICENSE.txt",
   "dependencies": {

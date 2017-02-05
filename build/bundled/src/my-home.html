@@ -1,9 +1,9 @@
-<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
 <link rel="import" href="shared-styles.html">
 
-</head><body><dom-module id="my-home">
-  
+<dom-module id="my-home">
+  <!-- Defines the element's style and local DOM -->
   <template>
     <style include="shared-styles">
       :host {
@@ -26,8 +26,12 @@
       </div>
       text2
     </div>
-    <paper-slider min="-100" max="100" value="0"></paper-slider>
+    <paper-slider min="-100" max ="100" value="0"></paper-slider>
   </template>
-  
-  <script>Polymer({is:"my-home"});</script>
-</dom-module></body></html>
+  <!-- Creates the element's prototype and registers it -->
+  <script>
+    Polymer({
+      is: 'my-home'
+    });
+  </script>
+</dom-module>

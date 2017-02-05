@@ -1,1 +1,19 @@
-!function(){"undefined"!=typeof self&&!self.Prism||"undefined"!=typeof global&&!global.Prism||Prism.hooks.add("before-highlight",function(e){var f=e.grammar;f.tab=/\t/g,f.crlf=/\r\n/g,f.lf=/\n/g,f.cr=/\r/g,f.space=/ /g})}();
+(function(){
+
+if (
+	typeof self !== 'undefined' && !self.Prism ||
+	typeof global !== 'undefined' && !global.Prism
+) {
+	return;
+}
+
+Prism.hooks.add('before-highlight', function(env) {
+	var tokens = env.grammar;
+
+	tokens.tab = /\t/g;
+	tokens.crlf = /\r\n/g;
+	tokens.lf = /\n/g;
+	tokens.cr = /\r/g;
+	tokens.space = / /g;
+});
+})();

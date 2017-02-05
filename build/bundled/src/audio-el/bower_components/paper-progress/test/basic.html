@@ -1,7 +1,18 @@
-<!DOCTYPE html><html><head>
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
   <meta charset="UTF-8">
   <title>paper-progress test</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
@@ -25,8 +36,113 @@
     </template>
   </test-fixture>
 
-  <script>suite("basic features",function(){var t;setup(function(){t=fixture("trivialProgress")}),test("check default",function(){assert.equal(t.min,0),assert.equal(t.max,100),assert.equal(t.value,0)}),test("set value",function(s){t.value=50,asyncPlatformFlush(function(){assert.equal(t.value,50),t.value=60.1,asyncPlatformFlush(function(){assert.equal(t.value,60),s()})})}),test("set max",function(s){t.max=10,t.value=11,asyncPlatformFlush(function(){assert.equal(t.value,t.max),s()})}),test("test ratio",function(s){t.max=10,t.value=5,asyncPlatformFlush(function(){assert.equal(t.ratio,50),s()})}),test("test secondary ratio",function(s){t.max=10,t.secondaryProgress=5,asyncPlatformFlush(function(){assert.equal(t.secondaryRatio,50),s()})}),test("set min",function(s){t.min=10,t.max=50,t.value=30,asyncPlatformFlush(function(){assert.equal(t.ratio,50),t.value=0,asyncPlatformFlush(function(){assert.equal(t.value,t.min),s()})})}),test("set step",function(s){t.min=0,t.max=10,t.value=5.1,asyncPlatformFlush(function(){assert.equal(t.value,5),t.step=.1,t.value=5.1,asyncPlatformFlush(function(){assert.equal(t.value,5.1),s()})})})}),suite("transiting class",function(){var t;setup(function(){t=fixture("transitingProgress")}),test("progress bars",function(){var s=window.getComputedStyle(t.$.primaryProgress),a=window.getComputedStyle(t.$.secondaryProgress),e=s["transition-property"];assert.isTrue("transform"===e||"-webkit-transform"===e),assert.equal(s["transition-duration"],"0.08s"),e=a["transition-property"],assert.isTrue("transform"===e||"-webkit-transform"===e),assert.equal(a["transition-duration"],"0.08s")})});</script>
+  <script>
+    suite('basic features', function() {
+      var progress;
 
+      setup(function() {
+        progress = fixture('trivialProgress');
+      });
 
+      test('check default', function() {
+        assert.equal(progress.min, 0);
+        assert.equal(progress.max, 100);
+        assert.equal(progress.value, 0);
+      });
 
-</body></html>
+      test('set value', function(done) {
+        progress.value = 50;
+        asyncPlatformFlush(function() {
+          assert.equal(progress.value, 50);
+          // test clamp value
+          progress.value = 60.1;
+          asyncPlatformFlush(function() {
+            assert.equal(progress.value, 60);
+            done();
+          });
+        });
+      });
+
+      test('set max', function(done) {
+        progress.max = 10;
+        progress.value = 11;
+        asyncPlatformFlush(function() {
+          assert.equal(progress.value, progress.max);
+          done();
+        });
+      });
+
+      test('test ratio', function(done) {
+        progress.max = 10;
+        progress.value = 5;
+        asyncPlatformFlush(function() {
+          assert.equal(progress.ratio, 50);
+          done();
+        });
+      });
+
+      test('test secondary ratio', function(done) {
+        progress.max = 10;
+        progress.secondaryProgress = 5;
+        asyncPlatformFlush(function() {
+          assert.equal(progress.secondaryRatio, 50);
+          done();
+        });
+      });
+
+      test('set min', function(done) {
+        progress.min = 10
+        progress.max = 50;
+        progress.value = 30;
+        asyncPlatformFlush(function() {
+          assert.equal(progress.ratio, 50);
+          progress.value = 0;
+          asyncPlatformFlush(function() {
+            assert.equal(progress.value, progress.min);
+            done();
+          });
+        });
+      });
+
+      test('set step', function(done) {
+        progress.min = 0;
+        progress.max = 10;
+        progress.value = 5.1;
+        asyncPlatformFlush(function() {
+          assert.equal(progress.value, 5);
+          progress.step = 0.1;
+          progress.value = 5.1;
+          asyncPlatformFlush(function() {
+            assert.equal(progress.value, 5.1);
+            done();
+          });
+        });
+      });
+    });
+
+    suite('transiting class', function() {
+      var progress;
+
+      setup(function() {
+        progress = fixture('transitingProgress');
+      });
+
+      test('progress bars', function() {
+        var stylesForPrimaryProgress = window.getComputedStyle(progress.$.primaryProgress);
+        var stylesForSecondaryProgress = window.getComputedStyle(progress.$.secondaryProgress);
+        var transitionProp = stylesForPrimaryProgress['transition-property'];
+
+        assert.isTrue(transitionProp === 'transform' || transitionProp === '-webkit-transform');
+        assert.equal(stylesForPrimaryProgress['transition-duration'], '0.08s');
+
+        transitionProp = stylesForSecondaryProgress['transition-property'];
+
+        assert.isTrue(transitionProp === 'transform' || transitionProp === '-webkit-transform');
+        assert.equal(stylesForSecondaryProgress['transition-duration'], '0.08s');
+      });
+    });
+
+  </script>
+
+</body>
+</html>

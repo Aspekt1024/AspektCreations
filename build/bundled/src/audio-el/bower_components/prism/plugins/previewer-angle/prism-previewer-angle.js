@@ -1,1 +1,118 @@
-!function(){if(("undefined"==typeof self||self.Prism)&&("undefined"==typeof global||global.Prism)){var a={css:!0,less:!0,markup:{lang:"markup",before:"punctuation",inside:"inside",root:Prism.languages.markup&&Prism.languages.markup.tag.inside["attr-value"]},sass:[{lang:"sass",inside:"inside",root:Prism.languages.sass&&Prism.languages.sass["property-line"]},{lang:"sass",before:"operator",inside:"inside",root:Prism.languages.sass&&Prism.languages.sass["variable-line"]}],scss:!0,stylus:[{lang:"stylus",before:"func",inside:"rest",root:Prism.languages.stylus&&Prism.languages.stylus["property-declaration"].inside},{lang:"stylus",before:"func",inside:"rest",root:Prism.languages.stylus&&Prism.languages.stylus["variable-declaration"].inside}]};Prism.hooks.add("before-highlight",function(s){if(s.language&&a[s.language]&&!a[s.language].initialized){var e=a[s.language];"Array"!==Prism.util.type(e)&&(e=[e]),e.forEach(function(e){var i,r,n,g;e===!0?(i="important",r=s.language,e=s.language):(i=e.before||"important",r=e.inside||e.lang,n=e.root||Prism.languages,g=e.skip,e=s.language),!g&&Prism.languages[e]&&(Prism.languages.insertBefore(r,i,{angle:/(?:\b|\B-|(?=\B\.))\d*\.?\d+(?:deg|g?rad|turn)\b/i},n),s.grammar=Prism.languages[e],a[s.language]={initialized:!0})})}}),Prism.plugins.Previewer&&new Prism.plugins.Previewer("angle",function(a){var s,e,i=parseFloat(a),r=a.match(/[a-z]+$/i);if(!i||!r)return!1;switch(r=r[0]){case"deg":s=360;break;case"grad":s=400;break;case"rad":s=2*Math.PI;break;case"turn":s=1}return e=100*i/s,e%=100,this[(i<0?"set":"remove")+"Attribute"]("data-negative",""),this.querySelector("circle").style.strokeDasharray=Math.abs(e)+",500",!0},"*",function(){this._elt.innerHTML='<svg viewBox="0 0 64 64"><circle r="16" cy="32" cx="32"></circle></svg>'})}}();
+(function() {
+
+	if (
+		typeof self !== 'undefined' && !self.Prism ||
+		typeof global !== 'undefined' && !global.Prism
+	) {
+		return;
+	}
+
+	var languages = {
+		'css': true,
+		'less': true,
+		'markup': {
+			lang: 'markup',
+			before: 'punctuation',
+			inside: 'inside',
+			root: Prism.languages.markup && Prism.languages.markup['tag'].inside['attr-value']
+		},
+		'sass': [
+			{
+				lang: 'sass',
+				inside: 'inside',
+				root: Prism.languages.sass && Prism.languages.sass['property-line']
+			},
+			{
+				lang: 'sass',
+				before: 'operator',
+				inside: 'inside',
+				root: Prism.languages.sass && Prism.languages.sass['variable-line']
+			}
+		],
+		'scss': true,
+		'stylus': [
+			{
+				lang: 'stylus',
+				before: 'func',
+				inside: 'rest',
+				root: Prism.languages.stylus && Prism.languages.stylus['property-declaration'].inside
+			},
+			{
+				lang: 'stylus',
+				before: 'func',
+				inside: 'rest',
+				root: Prism.languages.stylus && Prism.languages.stylus['variable-declaration'].inside
+			}
+		]
+	};
+
+	Prism.hooks.add('before-highlight', function (env) {
+		if (env.language && languages[env.language] && !languages[env.language].initialized) {
+			var lang = languages[env.language];
+			if (Prism.util.type(lang) !== 'Array') {
+				lang = [lang];
+			}
+			lang.forEach(function(lang) {
+				var before, inside, root, skip;
+				if (lang === true) {
+					before = 'important';
+					inside = env.language;
+					lang = env.language;
+				} else {
+					before = lang.before || 'important';
+					inside = lang.inside || lang.lang;
+					root = lang.root || Prism.languages;
+					skip = lang.skip;
+					lang = env.language;
+				}
+
+				if (!skip && Prism.languages[lang]) {
+					Prism.languages.insertBefore(inside, before, {
+						'angle': /(?:\b|\B-|(?=\B\.))\d*\.?\d+(?:deg|g?rad|turn)\b/i
+					}, root);
+					env.grammar = Prism.languages[lang];
+
+					languages[env.language] = {initialized: true};
+				}
+			});
+		}
+	});
+
+	if (Prism.plugins.Previewer) {
+		new Prism.plugins.Previewer('angle', function(value) {
+			var num = parseFloat(value);
+			var unit = value.match(/[a-z]+$/i);
+			var max, percentage;
+			if (!num || !unit) {
+				return false;
+			}
+			unit = unit[0];
+
+			switch(unit) {
+				case 'deg':
+					max = 360;
+					break;
+				case 'grad':
+					max = 400;
+					break;
+				case 'rad':
+					max = 2 * Math.PI;
+					break;
+				case 'turn':
+					max = 1;
+			}
+
+			percentage = 100 * num/max;
+			percentage %= 100;
+
+			this[(num < 0? 'set' : 'remove') + 'Attribute']('data-negative', '');
+			this.querySelector('circle').style.strokeDasharray = Math.abs(percentage) + ',500';
+			return true;
+		}, '*', function () {
+			this._elt.innerHTML = '<svg viewBox="0 0 64 64">' +
+				'<circle r="16" cy="32" cx="32"></circle>' +
+			'</svg>';
+		});
+	}
+
+}());

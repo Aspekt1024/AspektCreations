@@ -1,10 +1,20 @@
-<html><head><link rel="import" href="/bower_components/polymer/polymer.html">
-<link rel="import" href="/bower_components/paper-progress/paper-progress.html">
-<link rel="import" href="/bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="/bower_components/iron-icons/av-icons.html">
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
 
-</head><body><dom-module id="audio-el">
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-progress/paper-progress.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/av-icons.html">
+
+<dom-module id="audio-el">
   <template>
   <style>
     :host {
@@ -97,7 +107,9 @@
     <div id="wrapper" class="layout-horizontal" on-click="playPause">
 
       <div id="left" class="self-start">
-        <iron-icon id="play" class="fit" icon$="{{ _getIconString(isPlaying) }}"></iron-icon>
+        <iron-icon id="play"
+                  class="fit"
+                  icon$="{{ _getIconString(isPlaying) }}"></iron-icon>
       </div>
 
       <div class="flex">
@@ -113,8 +125,84 @@
       </div>
 
     <div>
-  </div></div></template>
+  </template>
 
-  <script>Polymer({is:"audio-el",properties:{title:String,src:String,isPlaying:{type:Boolean,value:!1},duration:{type:Number,value:0}},_getIconString:function(e){return e?"av:play-circle-outline":"av:pause-circle-outline"},playPause:function(e){e.preventDefault();var a=this;a.$.audio.paused?(a.$.audio.play(),a.isPlaying=!0):(a.$.audio.pause(),a.isPlaying=!1)},listeners:{"audio.loadedmetadata":"_onCanPlay","audio.playing":"_startProgressTimer"},_onCanPlay:function(){var e=this;e.$.progress.max=1e3*e.$.audio.duration,e.duration=e.$.audio.duration},_startProgressTimer:function(){var e=this;e.timer={},e.timer.sliderUpdateInterval&&clearInterval(e.timer.sliderUpdateInterval),e.timer.sliderUpdateInterval=setInterval(function(){e.$.audio.paused?clearInterval(e.time.sliderUpdateInterval):(e.$.progress.value=1e3*e.$.audio.currentTime,e.currentTime=e.$.audio.currentTime)},120)},_convertSecToMin:function(e){if(0===e)return"";var a=Math.floor(e/60),r=Math.floor(e%60)+"";return a+":"+(r.length<2?"0"+r:r)}});</script>
+  <script>
+    Polymer({
+      is: 'audio-el',
+      properties: {
+        title: String,
+        src: String,
+        isPlaying: {
+          type: Boolean,
+          value: false
+        },
+        duration: {
+          type: Number,
+          value: 0
+        }
+      },
+
+      _getIconString: function(isP) {
+        if (isP) {
+          return "av:play-circle-outline";
+        } else {
+          return "av:pause-circle-outline";
+        }
+      },
+
+      playPause: function(e) {
+        e.preventDefault();
+
+        var player = this;
+
+        if (player.$.audio.paused){
+          player.$.audio.play();
+          player.isPlaying = true;
+        } else {
+          player.$.audio.pause();
+          player.isPlaying = false;
+        } 
+      },
+
+      listeners: {
+        'audio.loadedmetadata': '_onCanPlay',
+        'audio.playing': '_startProgressTimer'
+      },
+
+      _onCanPlay: function() {
+        var player=this;
+        player.$.progress.max = player.$.audio.duration * 1000;
+        player.duration = player.$.audio.duration;
+      },
+
+      _startProgressTimer: function() {
+        var player = this;
+        player.timer = {};
+
+        if (player.timer.sliderUpdateInterval) {
+          clearInterval(player.timer.sliderUpdateInterval);
+        }
+
+        player.timer.sliderUpdateInterval = setInterval(function() {
+          if (player.$.audio.paused) {
+            clearInterval(player.time.sliderUpdateInterval);
+          } else {
+            player.$.progress.value = player.$.audio.currentTime * 1000;
+            player.currentTime = player.$.audio.currentTime;
+          }
+        }, 120);
+      },
+
+      _convertSecToMin: function(seconds) {
+        if (seconds === 0) {
+          return '';
+        }
+        var minutes = Math.floor(seconds / 60);
+        var secs = Math.floor(seconds % 60) + ''
+        return minutes + ":" + (secs.length < 2 ? '0' + secs : secs);
+      }
+
+    });
+  </script>
 </dom-module>
-</body></html>

@@ -1,1 +1,98 @@
-!function(){if(("undefined"==typeof self||self.Prism)&&("undefined"==typeof global||global.Prism)){var i=function(i){return Prism.plugins.autolinker&&Prism.plugins.autolinker.processGrammar(i),i},a={pattern:/(.)\bdata:[^\/]+\/[^,]+,(?:(?!\1)[\s\S]|\\\1)+(?=\1)/,lookbehind:!0,inside:{"language-css":{pattern:/(data:[^\/]+\/(?:[^+,]+\+)?css,)[\s\S]+/,lookbehind:!0},"language-javascript":{pattern:/(data:[^\/]+\/(?:[^+,]+\+)?javascript,)[\s\S]+/,lookbehind:!0},"language-json":{pattern:/(data:[^\/]+\/(?:[^+,]+\+)?json,)[\s\S]+/,lookbehind:!0},"language-markup":{pattern:/(data:[^\/]+\/(?:[^+,]+\+)?(?:html|xml),)[\s\S]+/,lookbehind:!0}}},n=["url","attr-value","string"];Prism.plugins.dataURIHighlight={processGrammar:function(i){i&&!i["data-uri"]&&(Prism.languages.DFS(i,function(i,e,r){n.indexOf(r)>-1&&"Array"!==Prism.util.type(e)&&(e.pattern||(e=this[i]={pattern:e}),e.inside=e.inside||{},"attr-value"==r?Prism.languages.insertBefore("inside",e.inside["url-link"]?"url-link":"punctuation",{"data-uri":a},e):e.inside["url-link"]?Prism.languages.insertBefore("inside","url-link",{"data-uri":a},e):e.inside["data-uri"]=a)}),i["data-uri"]=a)}},Prism.hooks.add("before-highlight",function(n){if(a.pattern.test(n.code))for(var e in a.inside)if(a.inside.hasOwnProperty(e)&&!a.inside[e].inside&&a.inside[e].pattern.test(n.code)){var r=e.match(/^language-(.+)/)[1];Prism.languages[r]&&(a.inside[e].inside={rest:i(Prism.languages[r])})}Prism.plugins.dataURIHighlight.processGrammar(n.grammar)})}}();
+(function () {
+
+	if (
+		typeof self !== 'undefined' && !self.Prism ||
+		typeof global !== 'undefined' && !global.Prism
+	) {
+		return;
+	}
+
+	var autoLinkerProcess = function (grammar) {
+		if (Prism.plugins.autolinker) {
+			Prism.plugins.autolinker.processGrammar(grammar);
+		}
+		return grammar;
+	};
+	var dataURI = {
+		pattern: /(.)\bdata:[^\/]+\/[^,]+,(?:(?!\1)[\s\S]|\\\1)+(?=\1)/,
+		lookbehind: true,
+		inside: {
+			'language-css': {
+				pattern: /(data:[^\/]+\/(?:[^+,]+\+)?css,)[\s\S]+/,
+				lookbehind: true
+			},
+			'language-javascript': {
+				pattern: /(data:[^\/]+\/(?:[^+,]+\+)?javascript,)[\s\S]+/,
+				lookbehind: true
+			},
+			'language-json': {
+				pattern: /(data:[^\/]+\/(?:[^+,]+\+)?json,)[\s\S]+/,
+				lookbehind: true
+			},
+			'language-markup': {
+				pattern: /(data:[^\/]+\/(?:[^+,]+\+)?(?:html|xml),)[\s\S]+/,
+				lookbehind: true
+			}
+		}
+	};
+
+	// Tokens that may contain URLs
+	var candidates = ['url', 'attr-value', 'string'];
+
+	Prism.plugins.dataURIHighlight = {
+		processGrammar: function (grammar) {
+			// Abort if grammar has already been processed
+			if (!grammar || grammar['data-uri']) {
+				return;
+			}
+
+			Prism.languages.DFS(grammar, function (key, def, type) {
+				if (candidates.indexOf(type) > -1 && Prism.util.type(def) !== 'Array') {
+					if (!def.pattern) {
+						def = this[key] = {
+							pattern: def
+						};
+					}
+
+					def.inside = def.inside || {};
+
+					if (type == 'attr-value') {
+						Prism.languages.insertBefore('inside', def.inside['url-link'] ? 'url-link' : 'punctuation', {
+							'data-uri': dataURI
+						}, def);
+					}
+					else {
+						if (def.inside['url-link']) {
+							Prism.languages.insertBefore('inside', 'url-link', {
+								'data-uri': dataURI
+							}, def);
+						} else {
+							def.inside['data-uri'] = dataURI;
+						}
+					}
+				}
+			});
+			grammar['data-uri'] = dataURI;
+		}
+	};
+
+	Prism.hooks.add('before-highlight', function (env) {
+		// Prepare the needed grammars for this code block
+		if (dataURI.pattern.test(env.code)) {
+			for (var p in dataURI.inside) {
+				if (dataURI.inside.hasOwnProperty(p)) {
+					if (!dataURI.inside[p].inside && dataURI.inside[p].pattern.test(env.code)) {
+						var lang = p.match(/^language-(.+)/)[1];
+						if (Prism.languages[lang]) {
+							dataURI.inside[p].inside = {
+								rest: autoLinkerProcess(Prism.languages[lang])
+							};
+						}
+					}
+				}
+			}
+		}
+
+		Prism.plugins.dataURIHighlight.processGrammar(env.grammar);
+	});
+}());

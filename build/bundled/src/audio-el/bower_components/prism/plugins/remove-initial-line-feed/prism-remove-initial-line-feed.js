@@ -1,1 +1,21 @@
-!function(){"undefined"!=typeof self&&self.Prism&&self.document&&Prism.hooks.add("before-sanity-check",function(e){if(e.code){var s=e.element.parentNode,n=/\s*\bkeep-initial-line-feed\b\s*/;!s||"pre"!==s.nodeName.toLowerCase()||n.test(s.className)||n.test(e.element.className)||(e.code=e.code.replace(/^(?:\r?\n|\r)/,""))}})}();
+(function() {
+
+if (typeof self === 'undefined' || !self.Prism || !self.document) {
+	return;
+}
+
+Prism.hooks.add('before-sanity-check', function (env) {
+	if (env.code) {
+		var pre = env.element.parentNode;
+		var clsReg = /\s*\bkeep-initial-line-feed\b\s*/;
+		if (
+			pre && pre.nodeName.toLowerCase() === 'pre' &&
+			// Apply only if nor the <pre> or the <code> have the class
+			(!clsReg.test(pre.className) && !clsReg.test(env.element.className))
+		) {
+			env.code = env.code.replace(/^(?:\r?\n|\r)/, '');
+		}
+	}
+});
+
+}());

@@ -1,1 +1,29 @@
-!function(){if("undefined"!=typeof self&&self.Prism||"undefined"!=typeof global&&global.Prism){var s={};Prism.plugins.customClass={map:function(i){s.classMap=i},prefix:function(i){s.prefixString=i}},Prism.hooks.add("wrap",function(i){(s.classMap||s.prefixString)&&(i.classes=i.classes.map(function(i){return(s.prefixString||"")+(s.classMap[i]||i)}))})}}();
+(function(){
+
+if (
+	(typeof self === 'undefined' || !self.Prism) &&
+	(typeof global === 'undefined' || !global.Prism)
+) {
+	return;
+}
+
+var options = {};
+Prism.plugins.customClass = {
+	map: function map(cm) {
+		options.classMap = cm;
+	},
+	prefix: function prefix(string) {
+		options.prefixString = string;
+	}
+}
+
+Prism.hooks.add('wrap', function (env) {
+	if (!options.classMap && !options.prefixString) {
+		return;
+	}
+	env.classes = env.classes.map(function(c) {
+		return (options.prefixString || '') + (options.classMap[c] || c);
+	});
+});
+
+})();

@@ -1,9 +1,38 @@
-<html><head><link rel="import" href="../paper-styles/typography.html">
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../paper-styles/typography.html">
 <link rel="import" href="../paper-styles/color.html">
 
+<!--
+### Styling
 
+The following custom properties and mixins are available for styling:
 
-</head><body><dom-module id="iron-doc-viewer-styles">
+Custom property | Description | Default
+----------------|-------------|----------
+`--iron-doc-viewer-text-color` | Default Text color | `--paper-grey-900`
+`--iron-doc-viewer-title-link` | Text color of title links | `currentcolor`
+`--iron-doc-viewer-title-link-hover` | Text hover color of title links | `--paper-pink-500`
+`--iron-doc-viewer-markdown-background` | Background color of the summary markdown | `--paper-grey-200`
+`--iron-doc-viewer-api-link-color` | Text color of links in api | `--paper-grey-800`
+`--iron-doc-viewer-code-color` | Text color of td in summary | `black`
+`--iron-doc-viewer-summary-link-color` | Text color of link in summary markdown | `--paper-indigo-a200`
+`--iron-doc-viewer-nav-border` | Border color of nav hr | `--paper-grey-200`
+`--iron-doc-viewer-property-background` | Background color of properties and methods | `--paper-grey-200`
+`--iron-doc-viewer-private-property-background` | Background color of private properties and methods | `--paper-grey-300`
+`--iron-doc-viewer-button-hover` | Button text hover color | `--paper-pink-500`
+
+-->
+
+<dom-module id="iron-doc-viewer-styles">
   <template>
     <style>
       :host {
@@ -200,4 +229,3 @@
     </style>
   </template>
 </dom-module>
-</body></html>

@@ -1,7 +1,18 @@
-<!DOCTYPE html><html><head>
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
   <meta charset="UTF-8">
   <title>iron-range-behavior</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
@@ -18,8 +29,152 @@
     </template>
   </test-fixture>
 
-  <script>suite("<x-progressbar>",function(){var e;setup(function(){e=fixture("trivialRange")}),test("check default",function(){assert.equal(e.min,0),assert.equal(e.max,100),assert.equal(e.value,0)}),test("set value",function(u){e.value=50,flush(function(){assert.equal(e.value,50),e.value=60.1,flush(function(){assert.equal(e.value,60),u()})})}),test("set max",function(u){e.max=10,e.value=11,flush(function(){assert.equal(e.value,e.max),u()})}),test("test ratio",function(u){e.max=10,e.value=5,flush(function(){assert.equal(e.ratio,50),u()})}),test("set min",function(u){e.min=10,e.max=50,e.value=30,flush(function(){assert.equal(e.ratio,50),e.value=0,flush(function(){assert.equal(e.value,e.min),u()})})}),test("set step",function(u){e.min=0,e.max=10,e.value=5.1,flush(function(){assert.equal(e.value,5),e.step=.1,e.value=5.1,flush(function(){assert.equal(e.value,5.1),u()})})}),test("set large step",function(u){e.min=0,e.max=2625,e.step=875,e.value=875,flush(function(){assert.equal(e.value,875),u()})}),test("set step with min",function(u){e.min=-.9,e.max=1.1,e.step=.5,e.value=-.5,flush(function(){assert.equal(e.value,-.4),e.value=.7,flush(function(){assert.equal(e.value,.6),u()})})}),test("odd values",function(u){e.min=1,e.max=7,e.step=2,e.value=3,flush(function(){assert.equal(e.value,3),e.value+=e.step,assert.equal(e.value,5),e.value+=e.step,assert.equal(e.value,7),u()})}),test("negative values should round up",function(u){e.min=-10,e.max=10,e.step=.1,e.value=-8.4252,flush(function(){assert.equal(e.value,-8.4),u()})}),test("positive values should round up",function(u){e.min=10,e.max=100,e.step=.25,e.value=19.34567,flush(function(){assert.equal(e.value,19.25),u()})})});</script>
+  <script>
+    suite('<x-progressbar>', function() {
+      var range;
 
+      setup(function() {
+        range = fixture('trivialRange');
+      });
 
+      test('check default', function() {
+        assert.equal(range.min, 0);
+        assert.equal(range.max, 100);
+        assert.equal(range.value, 0);
+      });
 
-</body></html>
+      test('set value', function(done) {
+        range.value = 50;
+        flush(function() {
+          assert.equal(range.value, 50);
+          // test clamp value
+          range.value = 60.1;
+          flush(function() {
+            assert.equal(range.value, 60);
+            done();
+          });
+        });
+      });
+
+      test('set max', function(done) {
+        range.max = 10;
+        range.value = 11;
+        flush(function() {
+          assert.equal(range.value, range.max);
+          done();
+        });
+      });
+
+      test('test ratio', function(done) {
+        range.max = 10;
+        range.value = 5;
+        flush(function() {
+          assert.equal(range.ratio, 50);
+          done();
+        });
+      });
+
+      test('set min', function(done) {
+        range.min = 10
+        range.max = 50;
+        range.value = 30;
+        flush(function() {
+          assert.equal(range.ratio, 50);
+          range.value = 0;
+          flush(function() {
+            assert.equal(range.value, range.min);
+            done();
+          });
+        });
+      });
+
+      test('set step', function(done) {
+        range.min = 0;
+        range.max = 10;
+        range.value = 5.1;
+        flush(function() {
+          assert.equal(range.value, 5);
+          range.step = 0.1;
+          range.value = 5.1;
+          flush(function() {
+            assert.equal(range.value, 5.1);
+            done();
+          });
+        });
+      });
+
+      test('set large step', function(done) {
+        // PolymerElements/paper-slider#135
+        range.min = 0;
+        range.max = 2625;
+        range.step = 875;
+        range.value = 875;
+        flush(function() {
+          assert.equal(range.value, 875);
+          done();
+        });
+      });
+
+      test('set step with min', function(done) {
+        range.min = -0.9;
+        range.max = 1.1;
+        range.step = 0.5;
+        range.value = -0.5;
+        flush(function() {
+          assert.equal(range.value, -0.4);
+          range.value = 0.7;
+          flush(function() {
+            assert.equal(range.value, 0.6);
+            done();
+          });
+        });
+      });
+
+      test('odd values', function(done) {
+        range.min = 1;
+        range.max = 7;
+        range.step = 2;
+        range.value = 3;
+
+        flush(function() {
+          assert.equal(range.value, 3);
+
+          range.value += range.step;
+          assert.equal(range.value, 5);
+
+          range.value += range.step;
+          assert.equal(range.value, 7);
+          done();
+        });
+      });
+
+      test('negative values should round up', function(done) {
+        range.min = -10;
+        range.max = 10;
+        range.step = 0.1;
+        range.value = -8.4252;
+
+        flush(function() {
+          assert.equal(range.value, -8.4);
+          done();
+        });
+      });
+
+      test('positive values should round up', function(done) {
+        range.min = 10;
+        range.max = 100;
+        range.step = 0.25;
+        range.value = 19.34567;
+
+        flush(function() {
+          assert.equal(range.value, 19.25);
+          done();
+        });
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>

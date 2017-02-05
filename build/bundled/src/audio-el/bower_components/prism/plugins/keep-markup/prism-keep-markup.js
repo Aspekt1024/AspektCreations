@@ -1,1 +1,97 @@
-!function(){"undefined"!=typeof self&&self.Prism&&self.document&&document.createRange&&(Prism.plugins.KeepMarkup=!0,Prism.hooks.add("before-highlight",function(e){if(e.element.children.length){var n=0,o=[],t=function(e,d){var r={};d||(r.clone=e.cloneNode(!1),r.posOpen=n,o.push(r));for(var a=0,s=e.childNodes.length;a<s;a++){var p=e.childNodes[a];1===p.nodeType?t(p):3===p.nodeType&&(n+=p.data.length)}d||(r.posClose=n)};t(e.element,!0),o&&o.length&&(e.keepMarkup=o)}}),Prism.hooks.add("after-highlight",function(e){if(e.keepMarkup&&e.keepMarkup.length){var n=function(e,o){for(var t=0,d=e.childNodes.length;t<d;t++){var r=e.childNodes[t];if(1===r.nodeType){if(!n(r,o))return!1}else 3===r.nodeType&&(!o.nodeStart&&o.pos+r.data.length>o.node.posOpen&&(o.nodeStart=r,o.nodeStartPos=o.node.posOpen-o.pos),o.nodeStart&&o.pos+r.data.length>=o.node.posClose&&(o.nodeEnd=r,o.nodeEndPos=o.node.posClose-o.pos),o.pos+=r.data.length);if(o.nodeStart&&o.nodeEnd){var a=document.createRange();return a.setStart(o.nodeStart,o.nodeStartPos),a.setEnd(o.nodeEnd,o.nodeEndPos),o.node.clone.appendChild(a.extractContents()),a.insertNode(o.node.clone),a.detach(),!1}}return!0};e.keepMarkup.forEach(function(o){n(e.element,{node:o,pos:0})})}}))}();
+(function () {
+
+	if (typeof self === 'undefined' || !self.Prism || !self.document || !document.createRange) {
+		return;
+	}
+
+	Prism.plugins.KeepMarkup = true;
+
+	Prism.hooks.add('before-highlight', function (env) {
+		if (!env.element.children.length) {
+			return;
+		}
+
+		var pos = 0;
+		var data = [];
+		var f = function (elt, baseNode) {
+			var o = {};
+			if (!baseNode) {
+				// Clone the original tag to keep all attributes
+				o.clone = elt.cloneNode(false);
+				o.posOpen = pos;
+				data.push(o);
+			}
+			for (var i = 0, l = elt.childNodes.length; i < l; i++) {
+				var child = elt.childNodes[i];
+				if (child.nodeType === 1) { // element
+					f(child);
+				} else if(child.nodeType === 3) { // text
+					pos += child.data.length;
+				}
+			}
+			if (!baseNode) {
+				o.posClose = pos;
+			}
+		};
+		f(env.element, true);
+
+		if (data && data.length) {
+			// data is an array of all existing tags
+			env.keepMarkup = data;
+		}
+	});
+
+	Prism.hooks.add('after-highlight', function (env) {
+		if(env.keepMarkup && env.keepMarkup.length) {
+
+			var walk = function (elt, nodeState) {
+				for (var i = 0, l = elt.childNodes.length; i < l; i++) {
+
+					var child = elt.childNodes[i];
+
+					if (child.nodeType === 1) { // element
+						if (!walk(child, nodeState)) {
+							return false;
+						}
+
+					} else if (child.nodeType === 3) { // text
+						if(!nodeState.nodeStart && nodeState.pos + child.data.length > nodeState.node.posOpen) {
+							// We found the start position
+							nodeState.nodeStart = child;
+							nodeState.nodeStartPos = nodeState.node.posOpen - nodeState.pos;
+						}
+						if(nodeState.nodeStart && nodeState.pos + child.data.length >= nodeState.node.posClose) {
+							// We found the end position
+							nodeState.nodeEnd = child;
+							nodeState.nodeEndPos = nodeState.node.posClose - nodeState.pos;
+						}
+
+						nodeState.pos += child.data.length;
+					}
+
+					if (nodeState.nodeStart && nodeState.nodeEnd) {
+						// Select the range and wrap it with the clone
+						var range = document.createRange();
+						range.setStart(nodeState.nodeStart, nodeState.nodeStartPos);
+						range.setEnd(nodeState.nodeEnd, nodeState.nodeEndPos);
+						nodeState.node.clone.appendChild(range.extractContents());
+						range.insertNode(nodeState.node.clone);
+						range.detach();
+
+						// Process is over
+						return false;
+					}
+				}
+				return true;
+			};
+
+			// For each tag, we walk the DOM to reinsert it
+			env.keepMarkup.forEach(function (node) {
+				walk(env.element, {
+					node: node,
+					pos: 0
+				});
+			});
+		}
+	});
+}());
