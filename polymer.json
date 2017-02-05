@@ -2,7 +2,7 @@
   "entrypoint": "index.html",
   "shell": "src/my-app.html",
   "fragments": [
-    "src/home.html",
+    "src/my-home.html",
     "src/my-view1.html",
     "src/my-view2.html",
     "src/my-view3.html",
@@ -11,6 +11,7 @@
   "sourceGlobs": [
     "src/**/*",
     "images/**/*",
+    "audio/**/*",
     "bower.json"
   ],
   "includeDependencies": [
