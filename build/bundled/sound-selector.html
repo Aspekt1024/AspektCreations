@@ -1,0 +1,19 @@
+<html><head><link rel="import" href="bower_components/polymer/polymer.html">
+
+</head><body><dom-module id="sound-selector">
+
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+    {{title}}
+  </template>
+
+  <script>Polymer({is:"sound-selector",properties:{title:String,message:{type:String,value:"",notify:!0,reflectToAttribute:!0}},listeners:{tap:"activate"},activate:function(){this.message=this.title}});</script>
+
+</dom-module>
+
+</body></html>
