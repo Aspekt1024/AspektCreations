@@ -9,8 +9,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../src/shared-styles.html">
 <link rel="import" href="../bower_components/audio-el/audio-el.html">
+<link rel="import" href="../src/shared-styles.html">
+<link rel="import" href="../sound-selector.html">
 
 <dom-module id="my-audio">
   <template>
@@ -23,24 +24,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <div class="card">
-      <div class="circle">A</div>
-      <h1>Audio inspires emotion</h1>
-      <table width="100%">
+      <table cellspacing="10px">
         <tr>
-          <td width="30%"><center><audio-el title="mysterious.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el></center></audio-el></td>
-          <td width="3%"></td>
-          <td width="30%"><center><audio-el title="mysterious.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el></center></td>
-          <td width="3%"></td>
-          <td width="30%"><center><audio-el title="mysterious.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el></center></td>
+          <td><div class="circle">A</div></td>
+          <td><h1>Sound inspires emotion</h1></td>
         </tr>
         <tr>
-          <td width="30%"><center><audio-el title="mysterious.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el></center></audio-el></td>
-          <td width="3%"></td>
-          <td width="30%"><center><audio-el title="mysterious.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el></center></td>
-          <td width="3%"></td>
-          <td width="30%"><center><audio-el title="mysterious.wav" src="https://dl.dropboxusercontent.com/u/9994756/mysterious.wav"></audio-el></center></td>
+          <td width="20%"></td>
+          <td width="250">
+            <center><audio-el title$="{{track}}" src="https://dl.dropboxusercontent.com/u/9994756/{{track}}"></audio-el></center>
+          </td>
+          <td width="20%"></td>
         </tr>
       </table>
+
+      <ul>Sounds:
+        <li><sound-selector title="mysterious.wav" message="{{track}}"></sound-selector></li>
+        <li><sound-selector title="fields.wav" message="{{track}}"></sound-selector></li>
+        <li><sound-selector title="twinkly.ogg" message="{{track}}"></sound-selector></li>
+      </ul>
       
     </div>
   </template>
@@ -48,6 +50,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'my-audio',
+      proc: function(msg){
+        return msg;
+      }
     });
   </script>
 </dom-module>

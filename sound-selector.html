@@ -1,0 +1,37 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="sound-selector">
+
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+    {{title}}
+  </template>
+
+  <script>
+    Polymer({
+      is: 'sound-selector',
+      properties: {
+        title: String,
+        message: {
+          type: String,
+          value: "",
+          notify: true,
+          reflectToAttribute: true
+        }
+      },
+      listeners: {
+        'tap': 'activate'
+      },
+      activate: function() {
+        this.message = this.title;
+      }
+    });
+  </script>
+
+</dom-module>
+
